@@ -1,23 +1,40 @@
 package repository
 
-import "github.com/rinonkia/go-hexagonal-architecture/core/model"
+import (
+	"errors"
+
+	"github.com/rinonkia/go-hexagonal-architecture/core/model"
+	"github.com/rs/xid"
+)
+
+type users map[xid.ID]*model.User
 
 type inMemoryUserRepository struct {
-	users map[string]*model.User
+	im users
 }
 
 func NewInMemoryUserRepository() *inMemoryUserRepository {
-	return &inMemoryUserRepository{users: map[string]*model.User{}}
+	return &inMemoryUserRepository{
+		im: users{},
+	}
 }
 
 func (r *inMemoryUserRepository) Put(u *model.User) bool {
-	r.users[u.Name] = u
+	r.im[u.ID] = u
 	return true
 }
 
+func (r *inMemoryUserRepository) GetByID(id xid.ID) (*model.User, error) {
+	u := r.im[id]
+	if u == nil {
+		return nil, errors.New("user not found")
+	}
+	return u, nil
+}
+
 func (r *inMemoryUserRepository) GetAll() []*model.User {
-	us := make([]*model.User, 0, len(r.users))
-	for _, v := range r.users {
+	us := make([]*model.User, 0, len(r.im))
+	for _, v := range r.im {
 		us = append(us, v)
 	}
 	return us

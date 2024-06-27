@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rinonkia/go-hexagonal-architecture/port/repository"
-	"net/http"
 )
 
 func GetUsers(repo repository.UserRepository) func(ctx *gin.Context) {
