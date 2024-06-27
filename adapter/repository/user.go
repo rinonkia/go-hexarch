@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/rinonkia/go-hexagonal-architecture/core/model"
+	"github.com/rinonkia/go-hexarch/core/model"
 	"github.com/rs/xid"
 )
 

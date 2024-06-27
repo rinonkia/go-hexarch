@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexagonal-architecture/adapter/repository"
-	"github.com/rinonkia/go-hexagonal-architecture/handler"
+	"github.com/rinonkia/go-hexarch/adapter/repository"
+	"github.com/rinonkia/go-hexarch/handler"
 )
 
 func main() {

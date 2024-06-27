@@ -1,4 +1,4 @@
-module github.com/rinonkia/go-hexagonal-architecture
+module github.com/rinonkia/go-hexarch
 
 go 1.21.0
 

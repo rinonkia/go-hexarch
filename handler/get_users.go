@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexagonal-architecture/port/repository"
+	"github.com/rinonkia/go-hexarch/port/repository"
 )
 
 func GetUsers(repo repository.UserRepository) func(ctx *gin.Context) {

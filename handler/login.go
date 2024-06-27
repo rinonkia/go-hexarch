@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexagonal-architecture/port/repository"
+	"github.com/rinonkia/go-hexarch/port/repository"
 	"github.com/rs/xid"
 	"golang.org/x/crypto/bcrypt"
 )
