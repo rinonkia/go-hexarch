@@ -5,21 +5,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rinonkia/go-hexarch/core/model"
-	"github.com/rinonkia/go-hexarch/port/repository"
+	"github.com/rinonkia/go-hexarch/interface/repository"
+	"github.com/rinonkia/go-hexarch/interface/service"
 	"github.com/rs/xid"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Signup(repo repository.UserRepository) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
+func Signup(
+	tokenGenerator service.TokenGenerator,
+	userRepository repository.UserRepository,
+) func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 
-		un := ctx.PostForm("username")
-		pw := ctx.PostForm("password")
-		_ = ctx.PostForm("role")
+		un := c.PostForm("username")
+		pw := c.PostForm("password")
+		_ = c.PostForm("role")
 
 		p, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "error",
 			})
 			return
@@ -32,9 +36,20 @@ func Signup(repo repository.UserRepository) func(ctx *gin.Context) {
 			Role:     model.Admin,
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"success": repo.Put(u),
+		sr := tokenGenerator.Exec(&service.TokenGeneratorDTO{
+			ID: u.ID,
+		})
+		if sr.Err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": sr.Err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"success": userRepository.Put(u),
 			"user":    u,
+			"token":   sr.Token,
 		})
 	}
 }

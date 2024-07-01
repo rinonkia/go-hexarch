@@ -5,27 +5,36 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rinonkia/go-hexarch/adapter/repository"
+	"github.com/rinonkia/go-hexarch/adapter/service"
+	"github.com/rinonkia/go-hexarch/config"
 	"github.com/rinonkia/go-hexarch/handler"
+	"github.com/rinonkia/go-hexarch/handler/middleware"
 )
 
 func main() {
+	c := config.GetEnvConfig()
+
 	r := gin.Default()
 
 	// repository
 	userRepository := repository.NewInMemoryUserRepository()
 
+	// service
+	tokenGenerator := service.NewTokenGenerator(c.SecretKey)
+
+	// middleware
+	checkAuthorizationMiddleware := middleware.CheckAuthorization(c.SecretKey)
+
 	// handler
 	healthCheckHandler := handler.HealthCheck()
-	signupHandler := handler.Signup(userRepository)
+	signupHandler := handler.Signup(tokenGenerator, userRepository)
 	getUsersHandler := handler.GetUsers(userRepository)
-	loginHandler := handler.Login(userRepository)
-	logoutHandler := handler.Logout()
+	loginHandler := handler.Login(tokenGenerator, userRepository)
 
 	r.GET("/health", healthCheckHandler)
 	r.POST("/signup", signupHandler)
-	r.GET("/users", getUsersHandler)
+	r.GET("/users", checkAuthorizationMiddleware, getUsersHandler)
 	r.POST("/login", loginHandler)
-	r.GET("/logout", logoutHandler)
 
 	if err := r.Run(); err != nil {
 		log.Fatal(err)
