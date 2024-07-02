@@ -4,18 +4,18 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexarch/adapter/repository"
-	"github.com/rinonkia/go-hexarch/adapter/service"
 	"github.com/rinonkia/go-hexarch/config"
+	"github.com/rinonkia/go-hexarch/domain/service"
 	"github.com/rinonkia/go-hexarch/handler"
 	"github.com/rinonkia/go-hexarch/handler/middleware"
+	"github.com/rinonkia/go-hexarch/repository/im"
 )
 
 func main() {
 	c := config.GetEnvConfig()
 
 	// repository
-	userRepository := repository.NewInMemoryUserRepository()
+	userRepository := im.NewInMemoryUserRepository()
 
 	// service
 	tokenService := service.NewToken(c.SecretKey)

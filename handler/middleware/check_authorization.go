@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"github.com/rinonkia/go-hexarch/domain/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexarch/adapter/service"
 )
 
 const tokenHeaderKey = "Authorization"

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rinonkia/go-hexarch/adapter/service"
-	"github.com/rinonkia/go-hexarch/core/model"
-	"github.com/rinonkia/go-hexarch/interface/repository"
+	"github.com/rinonkia/go-hexarch/domain/entity"
+	"github.com/rinonkia/go-hexarch/domain/service"
+	"github.com/rinonkia/go-hexarch/repository"
 	"github.com/rs/xid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -29,11 +29,11 @@ func Signup(
 			return
 		}
 
-		u := &model.User{
+		u := &entity.User{
 			ID:       xid.New(),
 			Name:     un,
 			Password: p,
-			Role:     model.Admin,
+			Role:     entity.Admin,
 		}
 
 		token, err := tokenService.GenerateToken(u.ID)
