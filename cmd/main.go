@@ -30,7 +30,6 @@ func main() {
 	loginHandler := handler.Login(tokenService, userRepository)
 
 	r := gin.Default()
-	r.Use(middleware.SecureHeader(c))
 	r.GET("/health", healthCheckHandler)
 	r.POST("/signup", signupHandler)
 	r.GET("/users", checkAuthorizationMiddleware, getUsersHandler)
