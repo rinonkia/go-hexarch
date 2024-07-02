@@ -18,16 +18,16 @@ func main() {
 	userRepository := repository.NewInMemoryUserRepository()
 
 	// service
-	tokenGenerator := service.NewTokenGenerator(c.SecretKey)
+	tokenService := service.NewToken(c.SecretKey)
 
 	// middleware
-	checkAuthorizationMiddleware := middleware.CheckAuthorization(c.SecretKey)
+	checkAuthorizationMiddleware := middleware.CheckAuthorization(tokenService)
 
 	// handler
 	healthCheckHandler := handler.HealthCheck()
-	signupHandler := handler.Signup(tokenGenerator, userRepository)
+	signupHandler := handler.Signup(tokenService, userRepository)
 	getUsersHandler := handler.GetUsers(userRepository)
-	loginHandler := handler.Login(tokenGenerator, userRepository)
+	loginHandler := handler.Login(tokenService, userRepository)
 
 	r := gin.Default()
 	r.Use(middleware.SecureHeader(c))
