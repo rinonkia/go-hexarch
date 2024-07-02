@@ -9,6 +9,7 @@ import (
 
 type (
 	EnvConfig struct {
+		Host      string
 		Port      string
 		SecretKey SecretKey
 	}
@@ -21,6 +22,11 @@ func GetEnvConfig() *EnvConfig {
 		log.Fatal(err)
 	}
 
+	host := os.Getenv("HOST")
+	if host == "" {
+		log.Fatal("HOST should not be empty")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("PORT should not be empty")
@@ -31,6 +37,7 @@ func GetEnvConfig() *EnvConfig {
 		log.Fatal("SECRET_KEY should not be empty")
 	}
 	return &EnvConfig{
+		Host:      host,
 		Port:      port,
 		SecretKey: SecretKey(secretKey),
 	}

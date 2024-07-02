@@ -14,8 +14,6 @@ import (
 func main() {
 	c := config.GetEnvConfig()
 
-	r := gin.Default()
-
 	// repository
 	userRepository := repository.NewInMemoryUserRepository()
 
@@ -31,6 +29,8 @@ func main() {
 	getUsersHandler := handler.GetUsers(userRepository)
 	loginHandler := handler.Login(tokenGenerator, userRepository)
 
+	r := gin.Default()
+	r.Use(middleware.SecureHeader(c))
 	r.GET("/health", healthCheckHandler)
 	r.POST("/signup", signupHandler)
 	r.GET("/users", checkAuthorizationMiddleware, getUsersHandler)
