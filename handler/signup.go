@@ -23,9 +23,7 @@ func Signup(
 
 		p, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -38,16 +36,15 @@ func Signup(
 
 		token, err := tokenService.GenerateToken(u.ID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"success": userRepository.Put(u),
-			"user":    u,
-			"token":   token,
-		})
+		if ok := userRepository.Put(u); !ok {
+			failedResponse(c, http.StatusInternalServerError, err)
+			return
+		}
+
+		successResponse(c, token)
 	}
 }

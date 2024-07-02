@@ -11,6 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var userDoesNotMatchErr = errors.New("user or/and password does not match")
+
 func Login(
 	tokenService *service.Token,
 	userRepository repository.UserRepository,
@@ -20,43 +22,32 @@ func Login(
 
 		x, err := xid.FromString(id)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusBadRequest, err)
 			return
 		}
 		u, err := userRepository.GetByID(x)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusBadRequest, userDoesNotMatchErr)
 			return
 		}
 
 		pw := c.PostForm("password")
 		if err = bcrypt.CompareHashAndPassword(u.Password, []byte(pw)); err != nil {
-			status := http.StatusInternalServerError
 			if errors.Is(bcrypt.ErrMismatchedHashAndPassword, err) {
-				status = http.StatusNotFound
+				failedResponse(c, http.StatusBadRequest, userDoesNotMatchErr)
+				return
 			}
 
-			c.JSON(status, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusInternalServerError, err)
 			return
 		}
 
 		token, err := tokenService.GenerateToken(u.ID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": err.Error(),
-			})
+			failedResponse(c, http.StatusInternalServerError, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"user":  u,
-			"token": token,
-		})
+		successResponse(c, token)
 	}
 }
